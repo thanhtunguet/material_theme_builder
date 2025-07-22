@@ -101,7 +101,7 @@ class ThemeGeneratorService {
     required Color neutral,
     required Brightness brightness,
   }) {
-    final primaryArgb = primary.value;
+    final primaryArgb = ColorUtils.colorToInt(primary);
 
     final scheme = brightness == Brightness.light
         ? mcu.Scheme.light(primaryArgb)

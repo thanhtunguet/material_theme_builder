@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flutter/material.dart';
+import '../services/color_utils.dart';
 
 class SeedColorInput extends StatelessWidget {
   final String label;
@@ -9,13 +10,13 @@ class SeedColorInput extends StatelessWidget {
   final VoidCallback? onReset;
 
   const SeedColorInput({
-    Key? key,
+    super.key,
     required this.label,
     required this.description,
     required this.value,
     required this.onChanged,
     this.onReset,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,16 +35,19 @@ class SeedColorInput extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         description,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
                       ),
                     ],
                   ),
@@ -149,7 +153,7 @@ class SeedColorInput extends StatelessWidget {
   }
 
   String _colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+    return ColorUtils.colorToHex(color);
   }
 
   Color _getContrastingColor(Color color) {
@@ -170,7 +174,7 @@ class SeedColorsPanel extends StatelessWidget {
   final VoidCallback? onResetAll;
 
   const SeedColorsPanel({
-    Key? key,
+    super.key,
     required this.primarySeed,
     required this.secondarySeed,
     required this.tertiarySeed,
@@ -180,7 +184,7 @@ class SeedColorsPanel extends StatelessWidget {
     required this.onTertiaryChanged,
     required this.onNeutralChanged,
     this.onResetAll,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -193,8 +197,8 @@ class SeedColorsPanel extends StatelessWidget {
             Text(
               'Seed Colors',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             if (onResetAll != null)
               OutlinedButton.icon(
@@ -208,8 +212,8 @@ class SeedColorsPanel extends StatelessWidget {
         Text(
           'These colors will be used to generate your complete Material 3 color scheme',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
         ),
         const SizedBox(height: 24),
         GridView.count(

@@ -38,11 +38,22 @@ class ColorUtils {
   }
 
   static Color adjustOpacity(Color color, double opacity) {
-    return color.withOpacity(opacity);
+    return color.withValues(alpha: opacity);
   }
 
   static String colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+    return '#${_colorToInt(color).toRadixString(16).substring(2).toUpperCase()}';
+  }
+
+  static int _colorToInt(Color color) {
+    return (color.a * 255).round() << 24 |
+           (color.r * 255).round() << 16 |
+           (color.g * 255).round() << 8 |
+           (color.b * 255).round();
+  }
+
+  static int colorToInt(Color color) {
+    return _colorToInt(color);
   }
 
   static Color hexToColor(String hex) {

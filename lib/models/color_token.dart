@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import '../services/color_utils.dart';
 
 part 'color_token.g.dart';
 
@@ -43,7 +44,7 @@ class ColorToken {
   }
 
   static int? _colorToJson(Color? color) {
-    return color?.value;
+    return color != null ? ColorUtils.colorToInt(color) : null;
   }
 
   ColorToken copyWith({

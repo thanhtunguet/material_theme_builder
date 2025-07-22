@@ -35,7 +35,6 @@ dependencies:
   flutter_colorpicker: ^1.0.3      # Alternative color picker
   json_annotation: ^4.8.1          # JSON serialization
   provider: ^6.1.1                 # State management
-  file_saver: ^0.2.9               # Export functionality
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import '../services/color_utils.dart';
 
 class ColorPickerWidget extends StatefulWidget {
   final Color initialColor;
@@ -83,7 +84,7 @@ class _ColorPickerWidgetState extends State<ColorPickerWidget> {
   }
 
   String _colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+    return ColorUtils.colorToHex(color);
   }
 
   Color _getContrastingColor(Color color) {
@@ -179,7 +180,7 @@ class CompactColorPicker extends StatelessWidget {
   }
 
   String _colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+    return ColorUtils.colorToHex(color);
   }
 
   Color _getContrastingColor(Color color) {

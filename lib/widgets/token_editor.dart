@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/color_token.dart';
+
 import '../constants/material_tokens.dart';
+import '../models/color_token.dart';
 import 'color_picker_widget.dart';
 
 class TokenEditor extends StatefulWidget {
@@ -11,13 +12,13 @@ class TokenEditor extends StatefulWidget {
   final Function(String tokenName, bool isDark) onTokenReset;
 
   const TokenEditor({
-    Key? key,
+    super.key,
     required this.lightTokens,
     required this.darkTokens,
     required this.isDarkMode,
     required this.onTokenChanged,
     required this.onTokenReset,
-  }) : super(key: key);
+  });
 
   @override
   State<TokenEditor> createState() => _TokenEditorState();
@@ -43,8 +44,8 @@ class _TokenEditorState extends State<TokenEditor> {
                 Text(
                   'Token Editor',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 Row(
                   children: [
@@ -57,7 +58,9 @@ class _TokenEditorState extends State<TokenEditor> {
                       width: 12,
                       height: 12,
                       decoration: BoxDecoration(
-                        color: widget.isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                        color: widget.isDarkMode
+                            ? Colors.grey[800]
+                            : Colors.grey[200],
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -69,8 +72,8 @@ class _TokenEditorState extends State<TokenEditor> {
             Text(
               'Customize individual color tokens or use the generated values',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
             const SizedBox(height: 24),
             Expanded(
@@ -90,7 +93,8 @@ class _TokenEditorState extends State<TokenEditor> {
 
   Widget _buildCategorySection(String category, List<String> tokens) {
     final isExpanded = _expandedCategories[category] ?? false;
-    final currentTokens = widget.isDarkMode ? widget.darkTokens : widget.lightTokens;
+    final currentTokens =
+        widget.isDarkMode ? widget.darkTokens : widget.lightTokens;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -114,12 +118,13 @@ class _TokenEditorState extends State<TokenEditor> {
                   Text(
                     category,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(12),
@@ -127,8 +132,10 @@ class _TokenEditorState extends State<TokenEditor> {
                     child: Text(
                       '${tokens.length}',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                          ),
                     ),
                   ),
                 ],
@@ -142,7 +149,7 @@ class _TokenEditorState extends State<TokenEditor> {
                 children: tokens.map((tokenName) {
                   final token = currentTokens[tokenName];
                   if (token == null) return const SizedBox.shrink();
-                  
+
                   return _buildTokenRow(tokenName, token);
                 }).toList(),
               ),
@@ -165,15 +172,15 @@ class _TokenEditorState extends State<TokenEditor> {
                 Text(
                   tokenName,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   token.description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -188,7 +195,8 @@ class _TokenEditorState extends State<TokenEditor> {
                   child: CompactColorPicker(
                     color: token.effectiveValue,
                     onColorChanged: (color) {
-                      widget.onTokenChanged(tokenName, color, widget.isDarkMode);
+                      widget.onTokenChanged(
+                          tokenName, color, widget.isDarkMode);
                     },
                     showLabel: false,
                   ),
@@ -217,9 +225,9 @@ class _TokenEditorState extends State<TokenEditor> {
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: token.isCustomized 
+              color: token.isCustomized
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
           ),
@@ -237,13 +245,13 @@ class TokenCategoryCard extends StatelessWidget {
   final Function(String tokenName) onTokenReset;
 
   const TokenCategoryCard({
-    Key? key,
+    super.key,
     required this.category,
     required this.tokens,
     required this.currentTokens,
     required this.onTokenChanged,
     required this.onTokenReset,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -252,14 +260,14 @@ class TokenCategoryCard extends StatelessWidget {
         title: Text(
           category,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         subtitle: Text('${tokens.length} tokens'),
         children: tokens.map((tokenName) {
           final token = currentTokens[tokenName];
           if (token == null) return const SizedBox.shrink();
-          
+
           return ListTile(
             title: Text(tokenName),
             subtitle: Text(

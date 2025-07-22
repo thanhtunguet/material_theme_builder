@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html' as html;
+import 'dart:html' as html; // ignore: avoid_web_libraries_in_flutter
 
 import '../models/color_token.dart';
 import '../models/theme_data_model.dart';
@@ -72,10 +72,6 @@ class ExportService {
     final bytes = utf8.encode(content);
     final blob = html.Blob([bytes], mimeType);
     final url = html.Url.createObjectUrlFromBlob(blob);
-
-    final anchor = html.AnchorElement(href: url)
-      ..setAttribute('download', filename)
-      ..click();
 
     html.Url.revokeObjectUrl(url);
   }

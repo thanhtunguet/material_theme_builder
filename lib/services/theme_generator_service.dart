@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:material_color_utilities/material_color_utilities.dart' as mcu;
-import '../models/color_token.dart';
-import '../models/color_scheme_model.dart';
+
 import '../constants/material_tokens.dart';
+import '../models/color_scheme_model.dart';
+import '../models/color_token.dart';
 import 'color_utils.dart';
 
 class ThemeGeneratorService {
@@ -18,7 +18,7 @@ class ThemeGeneratorService {
       tertiary: tertiary,
       neutral: neutral,
     );
-    
+
     final darkTokens = _generateDarkTokens(
       primary: primary,
       secondary: secondary,
@@ -101,41 +101,9 @@ class ThemeGeneratorService {
     required Color neutral,
     required Brightness brightness,
   }) {
-    final primaryArgb = ColorUtils.colorToInt(primary);
-
-    final scheme = brightness == Brightness.light
-        ? mcu.Scheme.light(primaryArgb)
-        : mcu.Scheme.dark(primaryArgb);
-
-    return ColorScheme(
+    return ColorScheme.fromSeed(
+      seedColor: primary,
       brightness: brightness,
-      primary: Color(scheme.primary),
-      onPrimary: Color(scheme.onPrimary),
-      primaryContainer: Color(scheme.primaryContainer),
-      onPrimaryContainer: Color(scheme.onPrimaryContainer),
-      secondary: Color(scheme.secondary),
-      onSecondary: Color(scheme.onSecondary),
-      secondaryContainer: Color(scheme.secondaryContainer),
-      onSecondaryContainer: Color(scheme.onSecondaryContainer),
-      tertiary: Color(scheme.tertiary),
-      onTertiary: Color(scheme.onTertiary),
-      tertiaryContainer: Color(scheme.tertiaryContainer),
-      onTertiaryContainer: Color(scheme.onTertiaryContainer),
-      error: Color(scheme.error),
-      onError: Color(scheme.onError),
-      errorContainer: Color(scheme.errorContainer),
-      onErrorContainer: Color(scheme.onErrorContainer),
-      surface: Color(scheme.surface),
-      onSurface: Color(scheme.onSurface),
-      surfaceVariant: Color(scheme.surfaceVariant),
-      onSurfaceVariant: Color(scheme.onSurfaceVariant),
-      outline: Color(scheme.outline),
-      outlineVariant: Color(scheme.outlineVariant),
-      shadow: Color(scheme.shadow),
-      scrim: Color(scheme.scrim),
-      inverseSurface: Color(scheme.inverseSurface),
-      onInverseSurface: Color(scheme.inverseOnSurface),
-      inversePrimary: Color(scheme.inversePrimary),
     );
   }
 
@@ -202,7 +170,7 @@ class ThemeGeneratorService {
       case 'onSurface':
         return scheme.onSurface;
       case 'surfaceVariant':
-        return scheme.surfaceVariant;
+        return scheme.surfaceContainerHighest;
       case 'onSurfaceVariant':
         return scheme.onSurfaceVariant;
       case 'surfaceDim':
@@ -249,10 +217,10 @@ class ThemeGeneratorService {
 
   static bool validateColorContrast(ColorSchemeModel model) {
     bool isValid = true;
-    
+
     final lightScheme = model.lightColorScheme;
     final darkScheme = model.darkColorScheme;
-    
+
     final criticalPairs = [
       [lightScheme.primary, lightScheme.onPrimary],
       [lightScheme.secondary, lightScheme.onSecondary],

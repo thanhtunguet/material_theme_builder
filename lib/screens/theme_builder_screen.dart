@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import '../models/theme_data_model.dart';
+
 import '../models/color_token.dart';
+import '../models/theme_data_model.dart';
 import '../services/theme_generator_service.dart';
-import '../widgets/seed_color_input.dart';
-import '../widgets/preview_panel.dart';
-import '../widgets/token_editor.dart';
 import '../widgets/export_panel.dart';
+import '../widgets/preview_panel.dart';
+import '../widgets/seed_color_input.dart';
+import '../widgets/token_editor.dart';
 
 class ThemeBuilderScreen extends StatefulWidget {
-  const ThemeBuilderScreen({Key? key}) : super(key: key);
+  const ThemeBuilderScreen({super.key});
 
   @override
   State<ThemeBuilderScreen> createState() => _ThemeBuilderScreenState();
 }
 
-class _ThemeBuilderScreenState extends State<ThemeBuilderScreen> with TickerProviderStateMixin {
+class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
+    with TickerProviderStateMixin {
   late ThemeDataModel _themeModel;
   bool _isDarkMode = false;
   late PageController _pageController;
@@ -47,7 +49,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen> with TickerProv
   void _updateSeedColor(String seedType, Color color) {
     setState(() {
       late Color primary, secondary, tertiary, neutral;
-      
+
       switch (seedType) {
         case 'primary':
           primary = color;
@@ -93,14 +95,16 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen> with TickerProv
 
   void _updateToken(String tokenName, Color color, bool isDark) {
     setState(() {
-      final tokens = isDark 
-          ? Map<String, ColorToken>.from(_themeModel.colorSchemeModel.darkTokens)
-          : Map<String, ColorToken>.from(_themeModel.colorSchemeModel.lightTokens);
-      
+      final tokens = isDark
+          ? Map<String, ColorToken>.from(
+              _themeModel.colorSchemeModel.darkTokens)
+          : Map<String, ColorToken>.from(
+              _themeModel.colorSchemeModel.lightTokens);
+
       final token = tokens[tokenName];
       if (token != null) {
         token.setCustomValue(color);
-        
+
         final newColorSchemeModel = _themeModel.colorSchemeModel.copyWith(
           lightTokens: isDark ? null : tokens,
           darkTokens: isDark ? tokens : null,
@@ -116,14 +120,16 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen> with TickerProv
 
   void _resetToken(String tokenName, bool isDark) {
     setState(() {
-      final tokens = isDark 
-          ? Map<String, ColorToken>.from(_themeModel.colorSchemeModel.darkTokens)
-          : Map<String, ColorToken>.from(_themeModel.colorSchemeModel.lightTokens);
-      
+      final tokens = isDark
+          ? Map<String, ColorToken>.from(
+              _themeModel.colorSchemeModel.darkTokens)
+          : Map<String, ColorToken>.from(
+              _themeModel.colorSchemeModel.lightTokens);
+
       final token = tokens[tokenName];
       if (token != null) {
         token.resetToDefault();
-        
+
         final newColorSchemeModel = _themeModel.colorSchemeModel.copyWith(
           lightTokens: isDark ? null : tokens,
           darkTokens: isDark ? tokens : null,
@@ -204,14 +210,14 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen> with TickerProv
               Text(
                 'Material Theme Builder',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               Text(
                 'Create custom Material Design 3 color schemes',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ),

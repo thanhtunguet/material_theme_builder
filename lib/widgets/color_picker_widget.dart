@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+
 import '../services/color_utils.dart';
 
 class ColorPickerWidget extends StatefulWidget {
@@ -8,11 +9,11 @@ class ColorPickerWidget extends StatefulWidget {
   final String title;
 
   const ColorPickerWidget({
-    Key? key,
+    super.key,
     required this.initialColor,
     required this.onColorChanged,
     this.title = 'Pick a color',
-  }) : super(key: key);
+  });
 
   @override
   State<ColorPickerWidget> createState() => _ColorPickerWidgetState();
@@ -100,12 +101,12 @@ class CompactColorPicker extends StatelessWidget {
   final bool showLabel;
 
   const CompactColorPicker({
-    Key? key,
+    super.key,
     required this.color,
     required this.onColorChanged,
     this.label,
     this.showLabel = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

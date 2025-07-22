@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/theme_data_model.dart';
 
 class PreviewPanel extends StatelessWidget {
@@ -7,11 +8,11 @@ class PreviewPanel extends StatelessWidget {
   final ValueChanged<bool> onThemeChanged;
 
   const PreviewPanel({
-    Key? key,
+    super.key,
     required this.themeModel,
     required this.isDarkMode,
     required this.onThemeChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +31,17 @@ class PreviewPanel extends StatelessWidget {
                 Text(
                   'Preview',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 Row(
                   children: [
                     Icon(
                       Icons.light_mode,
                       size: 20,
-                      color: isDarkMode ? Colors.grey : Theme.of(context).colorScheme.primary,
+                      color: isDarkMode
+                          ? Colors.grey
+                          : Theme.of(context).colorScheme.primary,
                     ),
                     Switch(
                       value: isDarkMode,
@@ -47,7 +50,9 @@ class PreviewPanel extends StatelessWidget {
                     Icon(
                       Icons.dark_mode,
                       size: 20,
-                      color: !isDarkMode ? Colors.grey : Theme.of(context).colorScheme.primary,
+                      color: !isDarkMode
+                          ? Colors.grey
+                          : Theme.of(context).colorScheme.primary,
                     ),
                   ],
                 ),
@@ -63,7 +68,10 @@ class PreviewPanel extends StatelessWidget {
                       color: themeData.colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline
+                            .withValues(alpha: 0.5),
                       ),
                     ),
                     child: SingleChildScrollView(
@@ -112,8 +120,8 @@ class PreviewPanel extends StatelessWidget {
             Text(
               'App Title',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
             ),
             const Spacer(),
             Icon(
@@ -138,8 +146,8 @@ class PreviewPanel extends StatelessWidget {
         Text(
           'Buttons',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -179,8 +187,8 @@ class PreviewPanel extends StatelessWidget {
         Text(
           'Cards',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 12),
         Row(
@@ -242,8 +250,8 @@ class PreviewPanel extends StatelessWidget {
         Text(
           'Inputs',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 12),
         Row(
@@ -276,34 +284,41 @@ class PreviewPanel extends StatelessWidget {
 
   Widget _buildColorTokensPreview(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Color Tokens',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
-            _buildColorToken(context, 'Primary', colorScheme.primary, colorScheme.onPrimary),
-            _buildColorToken(context, 'Secondary', colorScheme.secondary, colorScheme.onSecondary),
-            _buildColorToken(context, 'Tertiary', colorScheme.tertiary, colorScheme.onTertiary),
-            _buildColorToken(context, 'Error', colorScheme.error, colorScheme.onError),
-            _buildColorToken(context, 'Surface', colorScheme.surface, colorScheme.onSurface),
-            _buildColorToken(context, 'Primary Container', colorScheme.primaryContainer, colorScheme.onPrimaryContainer),
+            _buildColorToken(
+                context, 'Primary', colorScheme.primary, colorScheme.onPrimary),
+            _buildColorToken(context, 'Secondary', colorScheme.secondary,
+                colorScheme.onSecondary),
+            _buildColorToken(context, 'Tertiary', colorScheme.tertiary,
+                colorScheme.onTertiary),
+            _buildColorToken(
+                context, 'Error', colorScheme.error, colorScheme.onError),
+            _buildColorToken(
+                context, 'Surface', colorScheme.surface, colorScheme.onSurface),
+            _buildColorToken(context, 'Primary Container',
+                colorScheme.primaryContainer, colorScheme.onPrimaryContainer),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildColorToken(BuildContext context, String label, Color backgroundColor, Color textColor) {
+  Widget _buildColorToken(BuildContext context, String label,
+      Color backgroundColor, Color textColor) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -313,9 +328,9 @@ class PreviewPanel extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: textColor,
-          fontWeight: FontWeight.w500,
-        ),
+              color: textColor,
+              fontWeight: FontWeight.w500,
+            ),
       ),
     );
   }

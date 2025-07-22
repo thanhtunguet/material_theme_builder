@@ -6,7 +6,11 @@
       "Bash(flutter packages pub run:*)",
       "Bash(flutter run:*)",
       "Bash(flutter build:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(flutter analyze:*)",
+      "mcp__ide__getDiagnostics",
+      "WebFetch(domain:github.com)",
+      "Bash(flutter test:*)"
     ],
     "deny": []
   }

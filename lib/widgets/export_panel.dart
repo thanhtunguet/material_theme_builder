@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/theme_data_model.dart';
 import '../services/export_service.dart';
 
@@ -6,9 +7,9 @@ class ExportPanel extends StatelessWidget {
   final ThemeDataModel themeModel;
 
   const ExportPanel({
-    Key? key,
+    super.key,
     required this.themeModel,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +23,15 @@ class ExportPanel extends StatelessWidget {
             Text(
               'Export Theme',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
               'Download your theme in various formats for different use cases',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
             const SizedBox(height: 24),
             GridView.count(
@@ -51,7 +52,8 @@ class ExportPanel extends StatelessWidget {
                 _buildExportCard(
                   context,
                   title: 'JSON',
-                  description: 'Structured color data for custom implementations',
+                  description:
+                      'Structured color data for custom implementations',
                   icon: Icons.data_object,
                   onPressed: () => _exportJson(context),
                 ),
@@ -108,8 +110,8 @@ class ExportPanel extends StatelessWidget {
                     child: Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                   ),
                   Icon(
@@ -123,8 +125,8 @@ class ExportPanel extends StatelessWidget {
               Text(
                 description,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -139,7 +141,10 @@ class ExportPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -148,18 +153,27 @@ class ExportPanel extends StatelessWidget {
           Text(
             'Theme Information',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 12),
           _buildInfoRow(context, 'Name', themeModel.name),
-          _buildInfoRow(context, 'Description', themeModel.description.isEmpty ? 'No description' : themeModel.description),
+          _buildInfoRow(
+              context,
+              'Description',
+              themeModel.description.isEmpty
+                  ? 'No description'
+                  : themeModel.description),
           _buildInfoRow(context, 'Created', _formatDate(themeModel.createdAt)),
           _buildInfoRow(context, 'Updated', _formatDate(themeModel.updatedAt)),
-          _buildInfoRow(context, 'Light Tokens', '${themeModel.colorSchemeModel.lightTokens.length}'),
-          _buildInfoRow(context, 'Dark Tokens', '${themeModel.colorSchemeModel.darkTokens.length}'),
-          _buildInfoRow(context, 'Customized Light', '${themeModel.colorSchemeModel.lightTokens.values.where((t) => t.isCustomized).length}'),
-          _buildInfoRow(context, 'Customized Dark', '${themeModel.colorSchemeModel.darkTokens.values.where((t) => t.isCustomized).length}'),
+          _buildInfoRow(context, 'Light Tokens',
+              '${themeModel.colorSchemeModel.lightTokens.length}'),
+          _buildInfoRow(context, 'Dark Tokens',
+              '${themeModel.colorSchemeModel.darkTokens.length}'),
+          _buildInfoRow(context, 'Customized Light',
+              '${themeModel.colorSchemeModel.lightTokens.values.where((t) => t.isCustomized).length}'),
+          _buildInfoRow(context, 'Customized Dark',
+              '${themeModel.colorSchemeModel.darkTokens.values.where((t) => t.isCustomized).length}'),
         ],
       ),
     );
@@ -176,9 +190,9 @@ class ExportPanel extends StatelessWidget {
             child: Text(
               '$label:',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
           ),
           Expanded(
@@ -197,42 +211,60 @@ class ExportPanel extends StatelessWidget {
   }
 
   Future<void> _exportFlutterTheme(BuildContext context) async {
+    if (!context.mounted) return;
+    
     try {
       _showLoadingSnackBar(context, 'Exporting Flutter theme...');
       await ExportService.exportAsFlutterThemeData(themeModel);
+      if (!context.mounted) return;
       _showSuccessSnackBar(context, 'Flutter theme exported successfully!');
     } catch (e) {
-      _showErrorSnackBar(context, 'Failed to export Flutter theme: ${e.toString()}');
+      if (!context.mounted) return;
+      _showErrorSnackBar(
+          context, 'Failed to export Flutter theme: ${e.toString()}');
     }
   }
 
   Future<void> _exportJson(BuildContext context) async {
+    if (!context.mounted) return;
+    
     try {
       _showLoadingSnackBar(context, 'Exporting JSON...');
       await ExportService.exportAsJson(themeModel);
+      if (!context.mounted) return;
       _showSuccessSnackBar(context, 'JSON exported successfully!');
     } catch (e) {
+      if (!context.mounted) return;
       _showErrorSnackBar(context, 'Failed to export JSON: ${e.toString()}');
     }
   }
 
   Future<void> _exportCss(BuildContext context) async {
+    if (!context.mounted) return;
+    
     try {
       _showLoadingSnackBar(context, 'Exporting CSS...');
       await ExportService.exportAsCssCustomProperties(themeModel);
+      if (!context.mounted) return;
       _showSuccessSnackBar(context, 'CSS exported successfully!');
     } catch (e) {
+      if (!context.mounted) return;
       _showErrorSnackBar(context, 'Failed to export CSS: ${e.toString()}');
     }
   }
 
   Future<void> _exportDesignTokens(BuildContext context) async {
+    if (!context.mounted) return;
+    
     try {
       _showLoadingSnackBar(context, 'Exporting design tokens...');
       await ExportService.exportAsDesignTokens(themeModel);
+      if (!context.mounted) return;
       _showSuccessSnackBar(context, 'Design tokens exported successfully!');
     } catch (e) {
-      _showErrorSnackBar(context, 'Failed to export design tokens: ${e.toString()}');
+      if (!context.mounted) return;
+      _showErrorSnackBar(
+          context, 'Failed to export design tokens: ${e.toString()}');
     }
   }
 

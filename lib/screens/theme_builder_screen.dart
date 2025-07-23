@@ -27,7 +27,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
   void initState() {
     super.initState();
     _pageController = PageController();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _initializeTheme();
   }
 
@@ -188,8 +188,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
           child: TabBarView(
             controller: _tabController,
             children: [
-              _buildSeedColorsTab(),
-              _buildTokenEditorTab(),
+              _buildThemeEditorTab(),
               _buildCustomTokensTab(),
               _buildExportTab(),
             ],
@@ -219,8 +218,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
     return TabBarView(
       controller: _tabController,
       children: [
-        _buildSeedColorsTab(),
-        _buildTokenEditorTab(),
+        _buildThemeEditorTab(),
         _buildCustomTokensTab(),
         _buildExportTab(),
       ],
@@ -284,12 +282,8 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
         controller: _tabController,
         tabs: const [
           Tab(
-            icon: Icon(Icons.color_lens),
-            text: 'Seed Colors',
-          ),
-          Tab(
-            icon: Icon(Icons.tune),
-            text: 'Token Editor',
+            icon: Icon(Icons.palette),
+            text: 'Theme Editor',
           ),
           Tab(
             icon: Icon(Icons.extension),
@@ -307,32 +301,106 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
     );
   }
 
-  Widget _buildSeedColorsTab() {
+  Widget _buildThemeEditorTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24.0),
-      child: SeedColorsPanel(
-        primarySeed: _themeModel.colorSchemeModel.primarySeed,
-        secondarySeed: _themeModel.colorSchemeModel.secondarySeed,
-        tertiarySeed: _themeModel.colorSchemeModel.tertiarySeed,
-        neutralSeed: _themeModel.colorSchemeModel.neutralSeed,
-        onPrimaryChanged: (color) => _updateSeedColor('primary', color),
-        onSecondaryChanged: (color) => _updateSeedColor('secondary', color),
-        onTertiaryChanged: (color) => _updateSeedColor('tertiary', color),
-        onNeutralChanged: (color) => _updateSeedColor('neutral', color),
-        onResetAll: _resetAllSeeds,
-      ),
-    );
-  }
-
-  Widget _buildTokenEditorTab() {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: TokenEditor(
-        lightTokens: _themeModel.colorSchemeModel.lightTokens,
-        darkTokens: _themeModel.colorSchemeModel.darkTokens,
-        isDarkMode: _isDarkMode,
-        onTokenChanged: _updateToken,
-        onTokenReset: _resetToken,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Seed Colors Section
+          Card(
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.color_lens,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Seed Colors',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Define the base colors that generate your Material 3 color scheme',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SeedColorsPanel(
+                    primarySeed: _themeModel.colorSchemeModel.primarySeed,
+                    secondarySeed: _themeModel.colorSchemeModel.secondarySeed,
+                    tertiarySeed: _themeModel.colorSchemeModel.tertiarySeed,
+                    neutralSeed: _themeModel.colorSchemeModel.neutralSeed,
+                    onPrimaryChanged: (color) => _updateSeedColor('primary', color),
+                    onSecondaryChanged: (color) => _updateSeedColor('secondary', color),
+                    onTertiaryChanged: (color) => _updateSeedColor('tertiary', color),
+                    onNeutralChanged: (color) => _updateSeedColor('neutral', color),
+                    onResetAll: _resetAllSeeds,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Token Editor Section
+          Card(
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.tune,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Material Color Tokens',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Fine-tune individual color tokens or use the auto-generated values',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TokenEditor(
+                    lightTokens: _themeModel.colorSchemeModel.lightTokens,
+                    darkTokens: _themeModel.colorSchemeModel.darkTokens,
+                    isDarkMode: _isDarkMode,
+                    onTokenChanged: _updateToken,
+                    onTokenReset: _resetToken,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

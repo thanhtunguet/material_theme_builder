@@ -76,14 +76,11 @@ class _TokenEditorState extends State<TokenEditor> {
                   ),
             ),
             const SizedBox(height: 24),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: MaterialTokens.tokenCategories.entries.map((entry) {
-                    return _buildCategorySection(entry.key, entry.value);
-                  }).toList(),
-                ),
-              ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: MaterialTokens.tokenCategories.entries.map((entry) {
+                return _buildCategorySection(entry.key, entry.value);
+              }).toList(),
             ),
           ],
         ),

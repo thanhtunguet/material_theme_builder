@@ -575,9 +575,14 @@ class _TokenDialogState extends State<_TokenDialog> {
       ValueChanged<Color> onColorChanged) {
     showDialog(
       context: context,
-      builder: (context) => ColorPickerWidget(
-        initialColor: currentColor,
-        onColorChanged: onColorChanged,
+      builder: (context) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ColorPickerWidget(
+            initialColor: currentColor,
+            onColorChanged: onColorChanged,
+          ),
+        ),
       ),
     );
   }

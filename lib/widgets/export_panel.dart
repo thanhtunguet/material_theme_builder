@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/theme_data_model.dart';
 import '../services/export_service.dart';
+import '../services/custom_token_service.dart';
 
 class ExportPanel extends StatelessWidget {
   final ThemeDataModel themeModel;
@@ -48,6 +50,13 @@ class ExportPanel extends StatelessWidget {
                   description: 'Complete Dart code ready for Flutter projects',
                   icon: Icons.code,
                   onPressed: () => _exportFlutterTheme(context),
+                ),
+                _buildExportCard(
+                  context,
+                  title: 'ThemeExtension',
+                  description: 'Custom color extension for Flutter themes',
+                  icon: Icons.extension,
+                  onPressed: () => _exportThemeExtension(context),
                 ),
                 _buildExportCard(
                   context,
@@ -215,13 +224,35 @@ class ExportPanel extends StatelessWidget {
     
     try {
       _showLoadingSnackBar(context, 'Exporting Flutter theme...');
-      await ExportService.exportAsFlutterThemeData(themeModel);
+      final customTokenService = Provider.of<CustomTokenService>(context, listen: false);
+      await ExportService.exportAsFlutterThemeData(themeModel, customTokenService: customTokenService);
       if (!context.mounted) return;
       _showSuccessSnackBar(context, 'Flutter theme exported successfully!');
     } catch (e) {
       if (!context.mounted) return;
       _showErrorSnackBar(
           context, 'Failed to export Flutter theme: ${e.toString()}');
+    }
+  }
+
+  Future<void> _exportThemeExtension(BuildContext context) async {
+    if (!context.mounted) return;
+    
+    try {
+      final customTokenService = Provider.of<CustomTokenService>(context, listen: false);
+      
+      if (customTokenService.customTokens.isEmpty) {
+        _showErrorSnackBar(context, 'No custom tokens defined. Add some custom tokens first.');
+        return;
+      }
+      
+      _showLoadingSnackBar(context, 'Exporting ThemeExtension...');
+      await ExportService.exportAsThemeExtension(customTokenService);
+      if (!context.mounted) return;
+      _showSuccessSnackBar(context, 'ThemeExtension exported successfully!');
+    } catch (e) {
+      if (!context.mounted) return;
+      _showErrorSnackBar(context, 'Failed to export ThemeExtension: ${e.toString()}');
     }
   }
 

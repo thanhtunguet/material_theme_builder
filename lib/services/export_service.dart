@@ -4,11 +4,14 @@ import 'dart:html' as html; // ignore: avoid_web_libraries_in_flutter
 import '../models/color_token.dart';
 import '../models/theme_data_model.dart';
 import 'color_utils.dart';
+import 'custom_token_service.dart';
 
 class ExportService {
   static Future<void> exportAsFlutterThemeData(
-      ThemeDataModel themeModel) async {
-    final dartCode = _generateFlutterThemeData(themeModel);
+      ThemeDataModel themeModel, {
+      CustomTokenService? customTokenService,
+    }) async {
+    final dartCode = _generateFlutterThemeData(themeModel, customTokenService);
 
     try {
       _downloadFile(
@@ -18,6 +21,23 @@ class ExportService {
       );
     } catch (e) {
       throw Exception('Failed to export Flutter theme: $e');
+    }
+  }
+
+  static Future<void> exportAsThemeExtension(
+      CustomTokenService customTokenService, {
+      String? className,
+    }) async {
+    final extensionCode = _generateThemeExtensionCode(customTokenService, className);
+
+    try {
+      _downloadFile(
+        content: extensionCode,
+        filename: '${_sanitizeFileName(className ?? 'CustomColors')}_extension.dart',
+        mimeType: 'text/plain',
+      );
+    } catch (e) {
+      throw Exception('Failed to export theme extension: $e');
     }
   }
 
@@ -76,16 +96,17 @@ class ExportService {
     html.Url.revokeObjectUrl(url);
   }
 
-  static String _generateFlutterThemeData(ThemeDataModel themeModel) {
+  static String _generateFlutterThemeData(ThemeDataModel themeModel, CustomTokenService? customTokenService) {
     final lightScheme = themeModel.colorSchemeModel.lightColorScheme;
     final darkScheme = themeModel.colorSchemeModel.darkColorScheme;
+    final hasCustomTokens = customTokenService != null && customTokenService.customTokens.isNotEmpty;
 
     return '''
 // Generated Material Theme Builder - ${themeModel.name}
 // Created: ${themeModel.createdAt.toIso8601String()}
 // Updated: ${themeModel.updatedAt.toIso8601String()}
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';${hasCustomTokens ? '\n\n${_generateThemeExtensionCode(customTokenService, null)}' : ''}
 
 class ${_toCamelCase(themeModel.name)}Theme {
   static ThemeData get lightTheme {
@@ -119,7 +140,7 @@ class ${_toCamelCase(themeModel.name)}Theme {
         inverseSurface: Color(0x${ColorUtils.colorToInt(lightScheme.inverseSurface).toRadixString(16).substring(2)}),
         onInverseSurface: Color(0x${ColorUtils.colorToInt(lightScheme.onInverseSurface).toRadixString(16).substring(2)}),
         inversePrimary: Color(0x${ColorUtils.colorToInt(lightScheme.inversePrimary).toRadixString(16).substring(2)}),
-      ),
+      ),${hasCustomTokens ? '\n      extensions: <ThemeExtension<dynamic>>[\n        CustomColors.light,\n      ],' : ''}
       useMaterial3: true,
     );
   }
@@ -155,7 +176,7 @@ class ${_toCamelCase(themeModel.name)}Theme {
         inverseSurface: Color(0x${ColorUtils.colorToInt(darkScheme.inverseSurface).toRadixString(16).substring(2)}),
         onInverseSurface: Color(0x${ColorUtils.colorToInt(darkScheme.onInverseSurface).toRadixString(16).substring(2)}),
         inversePrimary: Color(0x${ColorUtils.colorToInt(darkScheme.inversePrimary).toRadixString(16).substring(2)}),
-      ),
+      ),${hasCustomTokens ? '\n      extensions: <ThemeExtension<dynamic>>[\n        CustomColors.dark,\n      ],' : ''}
       useMaterial3: true,
     );
   }
@@ -277,6 +298,10 @@ class ${_toCamelCase(themeModel.name)}Theme {
         .replaceAll(RegExp(r'[^\w\s-]'), '')
         .replaceAll(' ', '_')
         .toLowerCase();
+  }
+
+  static String _generateThemeExtensionCode(CustomTokenService customTokenService, String? className) {
+    return customTokenService.generateThemeExtensionCode(className ?? 'CustomColors');
   }
 
   static String _toCamelCase(String name) {

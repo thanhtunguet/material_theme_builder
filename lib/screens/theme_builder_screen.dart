@@ -7,6 +7,7 @@ import '../widgets/export_panel.dart';
 import '../widgets/preview_panel.dart';
 import '../widgets/seed_color_input.dart';
 import '../widgets/token_editor.dart';
+import '../widgets/custom_token_editor.dart';
 
 class ThemeBuilderScreen extends StatefulWidget {
   const ThemeBuilderScreen({super.key});
@@ -26,7 +27,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
   void initState() {
     super.initState();
     _pageController = PageController();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     _initializeTheme();
   }
 
@@ -173,6 +174,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
               children: [
                 _buildSeedColorsTab(),
                 _buildTokenEditorTab(),
+                _buildCustomTokensTab(),
                 _buildPreviewTab(),
                 _buildExportTab(),
               ],
@@ -246,6 +248,10 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
           Tab(
             icon: Icon(Icons.tune),
             text: 'Token Editor',
+          ),
+          Tab(
+            icon: Icon(Icons.extension),
+            text: 'Custom Tokens',
           ),
           Tab(
             icon: Icon(Icons.visibility),
@@ -325,6 +331,13 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
           });
         },
       ),
+    );
+  }
+
+  Widget _buildCustomTokensTab() {
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(24.0),
+      child: CustomTokenEditor(),
     );
   }
 

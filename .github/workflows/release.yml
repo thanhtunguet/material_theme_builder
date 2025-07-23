@@ -1,0 +1,88 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.27.4'
+        channel: 'stable'
+        cache: true
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Run tests
+      run: flutter test
+
+    - name: Analyze code
+      run: flutter analyze
+
+    - name: Build web release
+      run: |
+        flutter build web --release \
+          --web-renderer canvaskit \
+          --no-web-resources-cdn
+
+    - name: Create web archive
+      run: |
+        cd build/web
+        tar -czf ../../material-theme-builder-web-${{ github.ref_name }}.tar.gz .
+        cd ../..
+        zip -r material-theme-builder-web-${{ github.ref_name }}.zip build/web/
+
+    - name: Get changelog
+      id: changelog
+      run: |
+        # Extract changelog for current version
+        if [ -f CHANGELOG.md ]; then
+          changelog=$(awk '/^## \[?'"${GITHUB_REF_NAME#v}"'\]?/{flag=1; next} /^## \[?[0-9]+\.[0-9]+\.[0-9]+/{flag=0} flag' CHANGELOG.md)
+          if [ -z "$changelog" ]; then
+            changelog="Release ${{ github.ref_name }}"
+          fi
+        else
+          changelog="Release ${{ github.ref_name }}"
+        fi
+        echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+        echo "$changelog" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: Material Theme Builder ${{ github.ref_name }}
+        body: |
+          ## Material Theme Builder ${{ github.ref_name }}
+          
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          
+          ### Downloads
+          - **Web Application**: Download and extract the zip or tar.gz file, then serve the files using any web server
+          - **Live Demo**: Available at the GitHub Pages deployment
+          
+          ### Installation
+          1. Download the web build archive
+          2. Extract to your web server directory
+          3. Serve the files using any HTTP server (Apache, Nginx, Python's `http.server`, etc.)
+          
+          ### What's New
+          Check the full changelog for detailed information about changes in this release.
+          
+        files: |
+          material-theme-builder-web-${{ github.ref_name }}.tar.gz
+          material-theme-builder-web-${{ github.ref_name }}.zip
+        draft: false
+        prerelease: false
+        generate_release_notes: true

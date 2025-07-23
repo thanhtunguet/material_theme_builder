@@ -1,0 +1,100 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ develop ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    name: Analyze and Test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.27.4'
+        channel: 'stable'
+        cache: true
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Verify Flutter installation
+      run: |
+        flutter --version
+        flutter doctor
+
+    - name: Check code formatting
+      run: dart format --output=none --set-exit-if-changed .
+
+    - name: Analyze code
+      run: flutter analyze --fatal-infos --fatal-warnings
+
+    - name: Run tests
+      run: flutter test --coverage
+
+    - name: Upload coverage to Codecov
+      if: success()
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+        fail_ci_if_error: false
+
+  build-test:
+    runs-on: ubuntu-latest
+    name: Build Test
+    needs: analyze
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.27.4'
+        channel: 'stable'
+        cache: true
+
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Build web (debug)
+      run: flutter build web --debug
+
+    - name: Build web (release)
+      run: flutter build web --release --no-web-resources-cdn
+
+    - name: Check build size
+      run: |
+        echo "Build size:"
+        du -sh build/web
+        find build/web -name "*.js" -exec ls -lh {} \; | head -10
+
+  security:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'

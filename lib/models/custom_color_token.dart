@@ -13,6 +13,7 @@ class CustomColorToken {
   final Color lightValue;
   @JsonKey(fromJson: _colorFromJson, toJson: _colorToJson)
   final Color darkValue;
+  final bool isPredefined;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -22,6 +23,7 @@ class CustomColorToken {
     required this.description,
     required this.lightValue,
     required this.darkValue,
+    this.isPredefined = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : createdAt = createdAt ?? DateTime.now(),
@@ -51,6 +53,7 @@ class CustomColorToken {
     String? description,
     Color? lightValue,
     Color? darkValue,
+    bool? isPredefined,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -60,6 +63,7 @@ class CustomColorToken {
       description: description ?? this.description,
       lightValue: lightValue ?? this.lightValue,
       darkValue: darkValue ?? this.darkValue,
+      isPredefined: isPredefined ?? this.isPredefined,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );

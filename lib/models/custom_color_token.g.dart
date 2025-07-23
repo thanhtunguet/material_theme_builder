@@ -15,6 +15,7 @@ CustomColorToken _$CustomColorTokenFromJson(Map<String, dynamic> json) =>
           CustomColorToken._colorFromJson((json['lightValue'] as num).toInt()),
       darkValue:
           CustomColorToken._colorFromJson((json['darkValue'] as num).toInt()),
+      isPredefined: json['isPredefined'] as bool? ?? false,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -30,6 +31,7 @@ Map<String, dynamic> _$CustomColorTokenToJson(CustomColorToken instance) =>
       'description': instance.description,
       'lightValue': CustomColorToken._colorToJson(instance.lightValue),
       'darkValue': CustomColorToken._colorToJson(instance.darkValue),
+      'isPredefined': instance.isPredefined,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };

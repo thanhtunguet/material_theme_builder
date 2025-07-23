@@ -13,6 +13,8 @@ class CustomTokenEditor extends StatefulWidget {
 
 class _CustomTokenEditorState extends State<CustomTokenEditor> {
   bool _isExpanded = false;
+  bool _showPredefined = true;
+  bool _showCustom = true;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,20 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
                       onPressed: () => _showAddTokenDialog(context, tokenService),
                       tooltip: 'Add Custom Token',
                     ),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert),
+                      onSelected: (value) => _handleMenuAction(value, tokenService),
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'reset_predefined',
+                          child: ListTile(
+                            leading: Icon(Icons.refresh),
+                            title: Text('Reset Predefined Tokens'),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ],
+                    ),
                     IconButton(
                       icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
                       onPressed: () => setState(() => _isExpanded = !_isExpanded),
@@ -44,6 +60,7 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
               ),
               if (_isExpanded) ...[
                 const Divider(height: 1),
+                _buildFilterChips(),
                 if (tokenService.customTokens.isEmpty)
                   const Padding(
                     padding: EdgeInsets.all(32),
@@ -69,25 +86,149 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
                     ),
                   )
                 else
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: tokenService.customTokens.length,
-                    itemBuilder: (context, index) {
-                      final token = tokenService.customTokens[index];
-                      return _CustomTokenTile(
-                        token: token,
-                        onEdit: () => _showEditTokenDialog(context, tokenService, token),
-                        onDelete: () => _showDeleteDialog(context, tokenService, token),
-                      );
-                    },
-                  ),
+                  _buildTokensList(tokenService),
                 const SizedBox(height: 16),
               ],
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFilterChips() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          FilterChip(
+            label: const Text('Predefined'),
+            selected: _showPredefined,
+            onSelected: (value) => setState(() => _showPredefined = value),
+          ),
+          const SizedBox(width: 8),
+          FilterChip(
+            label: const Text('Custom'),
+            selected: _showCustom,
+            onSelected: (value) => setState(() => _showCustom = value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTokensList(CustomTokenService tokenService) {
+    final filteredTokens = tokenService.customTokens.where((token) {
+      if (token.isPredefined && !_showPredefined) return false;
+      if (!token.isPredefined && !_showCustom) return false;
+      return true;
+    }).toList();
+
+    if (filteredTokens.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(32),
+        child: Text(
+          'No tokens match the current filter',
+          style: TextStyle(color: Colors.grey),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    final predefinedTokens = filteredTokens.where((token) => token.isPredefined).toList();
+    final customTokens = filteredTokens.where((token) => !token.isPredefined).toList();
+
+    return Column(
+      children: [
+        if (predefinedTokens.isNotEmpty && _showPredefined) ...[
+          _buildSectionHeader('Predefined Tokens', predefinedTokens.length),
+          ...predefinedTokens.map((token) => _CustomTokenTile(
+            token: token,
+            onEdit: () => _showEditTokenDialog(context, tokenService, token),
+            onDelete: tokenService.canRemoveToken(token.id) 
+                ? () => _showDeleteDialog(context, tokenService, token)
+                : null,
+          )),
+        ],
+        if (customTokens.isNotEmpty && _showCustom) ...[
+          if (predefinedTokens.isNotEmpty) const Divider(),
+          _buildSectionHeader('Custom Tokens', customTokens.length),
+          ...customTokens.map((token) => _CustomTokenTile(
+            token: token,
+            onEdit: () => _showEditTokenDialog(context, tokenService, token),
+            onDelete: () => _showDeleteDialog(context, tokenService, token),
+          )),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader(String title, int count) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              count.toString(),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleMenuAction(String action, CustomTokenService tokenService) {
+    switch (action) {
+      case 'reset_predefined':
+        _showResetPredefinedDialog(context, tokenService);
+        break;
+    }
+  }
+
+  void _showResetPredefinedDialog(BuildContext context, CustomTokenService tokenService) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Predefined Tokens'),
+        content: const Text(
+          'This will reset all predefined tokens to their default values. Any modifications you made to predefined tokens will be lost.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              tokenService.resetPredefinedTokens();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Predefined tokens have been reset')),
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.orange),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -156,18 +297,37 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
 class _CustomTokenTile extends StatelessWidget {
   final CustomColorToken token;
   final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
 
   const _CustomTokenTile({
     required this.token,
     required this.onEdit,
-    required this.onDelete,
+    this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(token.name),
+      title: Row(
+        children: [
+          Expanded(child: Text(token.name)),
+          if (token.isPredefined)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                'PREDEFINED',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+        ],
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -213,11 +373,12 @@ class _CustomTokenTile extends StatelessWidget {
             onPressed: onEdit,
             tooltip: 'Edit',
           ),
-          IconButton(
-            icon: const Icon(Icons.delete, size: 20),
-            onPressed: onDelete,
-            tooltip: 'Delete',
-          ),
+          if (onDelete != null)
+            IconButton(
+              icon: const Icon(Icons.delete, size: 20),
+              onPressed: onDelete,
+              tooltip: 'Delete',
+            ),
         ],
       ),
     );

@@ -3,12 +3,16 @@ import 'dart:html' as html; // ignore: avoid_web_libraries_in_flutter
 import 'package:flutter/material.dart';
 import '../models/custom_color_token.dart';
 import '../models/custom_theme_extension.dart';
+import '../constants/predefined_tokens.dart';
 
 class CustomTokenService extends ChangeNotifier {
   final List<CustomColorToken> _customTokens = [];
   static const String _storageKey = 'material_theme_builder_custom_tokens';
+  bool _predefinedTokensInitialized = false;
 
   List<CustomColorToken> get customTokens => List.unmodifiable(_customTokens);
+  List<CustomColorToken> get predefinedTokens => _customTokens.where((token) => token.isPredefined).toList();
+  List<CustomColorToken> get userCustomTokens => _customTokens.where((token) => !token.isPredefined).toList();
 
   CustomTokenService() {
     _loadFromStorage();
@@ -140,15 +144,42 @@ class $className extends ThemeExtension<$className> {
       if (storage != null) {
         final Map<String, dynamic> data = json.decode(storage);
         final List<dynamic> tokensData = data['tokens'] ?? [];
+        _predefinedTokensInitialized = data['predefinedTokensInitialized'] ?? false;
         
         _customTokens.clear();
         _customTokens.addAll(
           tokensData.map((tokenData) => CustomColorToken.fromJson(tokenData))
         );
       }
+      
+      if (!_predefinedTokensInitialized) {
+        _initializePredefinedTokens();
+      }
     } catch (e) {
       debugPrint('Failed to load custom tokens from storage: $e');
+      if (!_predefinedTokensInitialized) {
+        _initializePredefinedTokens();
+      }
     }
+  }
+
+  void _initializePredefinedTokens() {
+    final predefinedTokens = PredefinedTokens.generatePredefinedTokens();
+    
+    for (final token in predefinedTokens) {
+      if (!_customTokens.any((existing) => existing.id == token.id)) {
+        _customTokens.insert(0, token);
+      }
+    }
+    
+    _predefinedTokensInitialized = true;
+    _saveToStorage();
+    notifyListeners();
+  }
+
+  void resetPredefinedTokens() {
+    _customTokens.removeWhere((token) => token.isPredefined);
+    _initializePredefinedTokens();
   }
 
   void _saveToStorage() {
@@ -156,6 +187,7 @@ class $className extends ThemeExtension<$className> {
       final data = {
         'version': '1.0.0',
         'savedAt': DateTime.now().toIso8601String(),
+        'predefinedTokensInitialized': _predefinedTokensInitialized,
         'tokens': _customTokens.map((token) => token.toJson()).toList(),
       };
       
@@ -172,7 +204,7 @@ class $className extends ThemeExtension<$className> {
   bool validateTokenName(String name, {String? excludeId}) {
     if (name.trim().isEmpty) return false;
     if (RegExp(r'^[0-9]').hasMatch(name.trim())) return false;
-    if (!RegExp(r'^[a-zA-Z][a-zA-Z0-9_]*$').hasMatch(name.trim())) return false;
+    if (!RegExp(r'^[a-zA-Z][a-zA-Z0-9_\s]*$').hasMatch(name.trim())) return false;
     
     final dartName = CustomColorToken(
       id: 'temp',
@@ -184,6 +216,11 @@ class $className extends ThemeExtension<$className> {
     
     return !_customTokens.any((token) => 
         token.id != excludeId && token.dartVariableName == dartName);
+  }
+
+  bool canRemoveToken(String id) {
+    final token = getToken(id);
+    return token != null && !token.isPredefined;
   }
 
   List<String> getTokenValidationErrors(String name, {String? excludeId}) {

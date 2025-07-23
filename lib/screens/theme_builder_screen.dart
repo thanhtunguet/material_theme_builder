@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import '../models/color_token.dart';
 import '../models/theme_data_model.dart';
 import '../services/theme_generator_service.dart';
+import '../widgets/custom_token_editor.dart';
 import '../widgets/export_panel.dart';
-import '../widgets/preview_panel.dart';
+import '../widgets/mobile_preview_panel.dart';
 import '../widgets/seed_color_input.dart';
 import '../widgets/token_editor.dart';
-import '../widgets/custom_token_editor.dart';
 
 class ThemeBuilderScreen extends StatefulWidget {
   const ThemeBuilderScreen({super.key});
@@ -27,7 +27,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
   void initState() {
     super.initState();
     _pageController = PageController();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _initializeTheme();
   }
 
@@ -162,6 +162,8 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isWideScreen = MediaQuery.of(context).size.width >= 1200;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
@@ -169,19 +171,59 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
           _buildAppBar(),
           _buildTabBar(),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildSeedColorsTab(),
-                _buildTokenEditorTab(),
-                _buildCustomTokensTab(),
-                _buildPreviewTab(),
-                _buildExportTab(),
-              ],
-            ),
+            child: isWideScreen
+                ? _buildWideScreenLayout()
+                : _buildNarrowScreenLayout(),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWideScreenLayout() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildSeedColorsTab(),
+              _buildTokenEditorTab(),
+              _buildCustomTokensTab(),
+              _buildExportTab(),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Container(
+            height: double.infinity,
+            padding: const EdgeInsets.all(24.0),
+            child: MobilePreviewPanel(
+              themeModel: _themeModel,
+              isDarkMode: _isDarkMode,
+              onThemeChanged: (isDark) {
+                setState(() {
+                  _isDarkMode = isDark;
+                });
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNarrowScreenLayout() {
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        _buildSeedColorsTab(),
+        _buildTokenEditorTab(),
+        _buildCustomTokensTab(),
+        _buildExportTab(),
+      ],
     );
   }
 
@@ -254,10 +296,6 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
             text: 'Custom Tokens',
           ),
           Tab(
-            icon: Icon(Icons.visibility),
-            text: 'Preview',
-          ),
-          Tab(
             icon: Icon(Icons.download),
             text: 'Export',
           ),
@@ -287,57 +325,22 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
   }
 
   Widget _buildTokenEditorTab() {
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: TokenEditor(
-              lightTokens: _themeModel.colorSchemeModel.lightTokens,
-              darkTokens: _themeModel.colorSchemeModel.darkTokens,
-              isDarkMode: _isDarkMode,
-              onTokenChanged: _updateToken,
-              onTokenReset: _resetToken,
-            ),
-          ),
-        ),
-        if (MediaQuery.of(context).size.width > 1200)
-          Container(
-            width: 400,
-            padding: const EdgeInsets.all(24.0),
-            child: PreviewPanel(
-              themeModel: _themeModel,
-              isDarkMode: _isDarkMode,
-              onThemeChanged: (isDark) {
-                setState(() {
-                  _isDarkMode = isDark;
-                });
-              },
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildPreviewTab() {
     return Padding(
       padding: const EdgeInsets.all(24.0),
-      child: PreviewPanel(
-        themeModel: _themeModel,
+      child: TokenEditor(
+        lightTokens: _themeModel.colorSchemeModel.lightTokens,
+        darkTokens: _themeModel.colorSchemeModel.darkTokens,
         isDarkMode: _isDarkMode,
-        onThemeChanged: (isDark) {
-          setState(() {
-            _isDarkMode = isDark;
-          });
-        },
+        onTokenChanged: _updateToken,
+        onTokenReset: _resetToken,
       ),
     );
   }
 
   Widget _buildCustomTokensTab() {
-    return const SingleChildScrollView(
-      padding: EdgeInsets.all(24.0),
-      child: CustomTokenEditor(),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: const CustomTokenEditor(),
     );
   }
 

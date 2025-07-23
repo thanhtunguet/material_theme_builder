@@ -2,7 +2,7 @@ name: material_theme_builder
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -30,17 +30,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  material_color_utilities: ^0.11.1  # For Material 3 color generation
-  flex_color_picker: ^3.4.1        # Advanced color picker
-  flutter_colorpicker: ^1.0.3      # Alternative color picker
-  json_annotation: ^4.8.1          # JSON serialization
-  provider: ^6.1.1                 # State management
+  material_color_utilities: ^0.11.1 # For Material 3 color generation
+  flex_color_picker: ^3.4.1 # Advanced color picker
+  flutter_colorpicker: ^1.0.3 # Alternative color picker
+  json_annotation: ^4.8.1 # JSON serialization
+  provider: ^6.1.1 # State management
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.6.0
+  build_runner: ^2.4.15
   json_serializable: ^6.7.1
   flutter_lints: ^5.0.0
 
@@ -49,7 +49,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

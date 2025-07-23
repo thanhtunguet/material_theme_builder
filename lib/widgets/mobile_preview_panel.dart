@@ -42,7 +42,8 @@ class MobilePreviewPanel extends StatelessWidget {
                       child: Theme(
                         data: themeData,
                         child: _MobilePreview(
-                          key: ValueKey('mobile_preview_${isDarkMode ? 'dark' : 'light'}'),
+                          key: ValueKey(
+                              'mobile_preview_${isDarkMode ? 'dark' : 'light'}'),
                         ),
                       ),
                     ),

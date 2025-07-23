@@ -99,7 +99,7 @@ class PredefinedTokens {
     return tokenDefinitions.entries.map((entry) {
       final tokenName = entry.key;
       final definition = entry.value;
-      
+
       return CustomColorToken(
         id: 'predefined_$tokenName',
         name: _formatTokenName(tokenName),
@@ -113,33 +113,35 @@ class PredefinedTokens {
 
   static String _formatTokenName(String tokenName) {
     if (tokenName == 'defaultColor') return 'Default';
-    
+
     return tokenName
         .replaceAllMapped(RegExp(r'([A-Z])'), (match) => ' ${match.group(0)}')
         .split(' ')
-        .map((word) => word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1))
+        .map((word) =>
+            word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1))
         .join(' ');
   }
 
   static bool isPredefinedToken(String name) {
     final normalizedName = name.toLowerCase().replaceAll(' ', '');
-    return tokenDefinitions.keys.any((key) => 
+    return tokenDefinitions.keys.any((key) =>
         key.toLowerCase() == normalizedName ||
-        _formatTokenName(key).toLowerCase().replaceAll(' ', '') == normalizedName
-    );
+        _formatTokenName(key).toLowerCase().replaceAll(' ', '') ==
+            normalizedName);
   }
 
   static List<String> getSemanticCategories() {
     return [
       'Warning',
-      'Information', 
+      'Information',
       'Success',
       'Default',
       'Critical',
     ];
   }
 
-  static List<CustomColorToken> getTokensForCategory(List<CustomColorToken> tokens, String category) {
+  static List<CustomColorToken> getTokensForCategory(
+      List<CustomColorToken> tokens, String category) {
     final categoryLower = category.toLowerCase();
     return tokens.where((token) {
       final tokenNameLower = token.name.toLowerCase();

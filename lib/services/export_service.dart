@@ -8,9 +8,9 @@ import 'custom_token_service.dart';
 
 class ExportService {
   static Future<void> exportAsFlutterThemeData(
-      ThemeDataModel themeModel, {
-      CustomTokenService? customTokenService,
-    }) async {
+    ThemeDataModel themeModel, {
+    CustomTokenService? customTokenService,
+  }) async {
     final dartCode = _generateFlutterThemeData(themeModel, customTokenService);
 
     try {
@@ -25,15 +25,17 @@ class ExportService {
   }
 
   static Future<void> exportAsThemeExtension(
-      CustomTokenService customTokenService, {
-      String? className,
-    }) async {
-    final extensionCode = _generateThemeExtensionCode(customTokenService, className);
+    CustomTokenService customTokenService, {
+    String? className,
+  }) async {
+    final extensionCode =
+        _generateThemeExtensionCode(customTokenService, className);
 
     try {
       _downloadFile(
         content: extensionCode,
-        filename: '${_sanitizeFileName(className ?? 'CustomColors')}_extension.dart',
+        filename:
+            '${_sanitizeFileName(className ?? 'CustomColors')}_extension.dart',
         mimeType: 'text/plain',
       );
     } catch (e) {
@@ -96,10 +98,12 @@ class ExportService {
     html.Url.revokeObjectUrl(url);
   }
 
-  static String _generateFlutterThemeData(ThemeDataModel themeModel, CustomTokenService? customTokenService) {
+  static String _generateFlutterThemeData(
+      ThemeDataModel themeModel, CustomTokenService? customTokenService) {
     final lightScheme = themeModel.colorSchemeModel.lightColorScheme;
     final darkScheme = themeModel.colorSchemeModel.darkColorScheme;
-    final hasCustomTokens = customTokenService != null && customTokenService.customTokens.isNotEmpty;
+    final hasCustomTokens = customTokenService != null &&
+        customTokenService.customTokens.isNotEmpty;
 
     return '''
 // Generated Material Theme Builder - ${themeModel.name}
@@ -300,8 +304,10 @@ class ${_toCamelCase(themeModel.name)}Theme {
         .toLowerCase();
   }
 
-  static String _generateThemeExtensionCode(CustomTokenService customTokenService, String? className) {
-    return customTokenService.generateThemeExtensionCode(className ?? 'CustomColors');
+  static String _generateThemeExtensionCode(
+      CustomTokenService customTokenService, String? className) {
+    return customTokenService
+        .generateThemeExtensionCode(className ?? 'CustomColors');
   }
 
   static String _toCamelCase(String name) {

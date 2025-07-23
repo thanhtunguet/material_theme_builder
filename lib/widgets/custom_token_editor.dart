@@ -27,18 +27,21 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
               ListTile(
                 leading: const Icon(Icons.extension),
                 title: const Text('Custom Color Tokens'),
-                subtitle: Text('${tokenService.customTokens.length} custom tokens'),
+                subtitle:
+                    Text('${tokenService.customTokens.length} custom tokens'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.add),
-                      onPressed: () => _showAddTokenDialog(context, tokenService),
+                      onPressed: () =>
+                          _showAddTokenDialog(context, tokenService),
                       tooltip: 'Add Custom Token',
                     ),
                     PopupMenuButton<String>(
                       icon: const Icon(Icons.more_vert),
-                      onSelected: (value) => _handleMenuAction(value, tokenService),
+                      onSelected: (value) =>
+                          _handleMenuAction(value, tokenService),
                       itemBuilder: (context) => [
                         const PopupMenuItem(
                           value: 'reset_predefined',
@@ -51,8 +54,10 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
                       ],
                     ),
                     IconButton(
-                      icon: Icon(_isExpanded ? Icons.expand_less : Icons.expand_more),
-                      onPressed: () => setState(() => _isExpanded = !_isExpanded),
+                      icon: Icon(
+                          _isExpanded ? Icons.expand_less : Icons.expand_more),
+                      onPressed: () =>
+                          setState(() => _isExpanded = !_isExpanded),
                     ),
                   ],
                 ),
@@ -66,7 +71,8 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
                     padding: EdgeInsets.all(32),
                     child: Column(
                       children: [
-                        Icon(Icons.palette_outlined, size: 48, color: Colors.grey),
+                        Icon(Icons.palette_outlined,
+                            size: 48, color: Colors.grey),
                         SizedBox(height: 16),
                         Text(
                           'No custom tokens yet',
@@ -135,29 +141,33 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
       );
     }
 
-    final predefinedTokens = filteredTokens.where((token) => token.isPredefined).toList();
-    final customTokens = filteredTokens.where((token) => !token.isPredefined).toList();
+    final predefinedTokens =
+        filteredTokens.where((token) => token.isPredefined).toList();
+    final customTokens =
+        filteredTokens.where((token) => !token.isPredefined).toList();
 
     return Column(
       children: [
         if (predefinedTokens.isNotEmpty && _showPredefined) ...[
           _buildSectionHeader('Predefined Tokens', predefinedTokens.length),
           ...predefinedTokens.map((token) => _CustomTokenTile(
-            token: token,
-            onEdit: () => _showEditTokenDialog(context, tokenService, token),
-            onDelete: tokenService.canRemoveToken(token.id) 
-                ? () => _showDeleteDialog(context, tokenService, token)
-                : null,
-          )),
+                token: token,
+                onEdit: () =>
+                    _showEditTokenDialog(context, tokenService, token),
+                onDelete: tokenService.canRemoveToken(token.id)
+                    ? () => _showDeleteDialog(context, tokenService, token)
+                    : null,
+              )),
         ],
         if (customTokens.isNotEmpty && _showCustom) ...[
           if (predefinedTokens.isNotEmpty) const Divider(),
           _buildSectionHeader('Custom Tokens', customTokens.length),
           ...customTokens.map((token) => _CustomTokenTile(
-            token: token,
-            onEdit: () => _showEditTokenDialog(context, tokenService, token),
-            onDelete: () => _showDeleteDialog(context, tokenService, token),
-          )),
+                token: token,
+                onEdit: () =>
+                    _showEditTokenDialog(context, tokenService, token),
+                onDelete: () => _showDeleteDialog(context, tokenService, token),
+              )),
         ],
       ],
     );
@@ -171,23 +181,24 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
           Text(
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
           ),
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               count.toString(),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.w500,
-              ),
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ),
         ],
@@ -203,7 +214,8 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
     }
   }
 
-  void _showResetPredefinedDialog(BuildContext context, CustomTokenService tokenService) {
+  void _showResetPredefinedDialog(
+      BuildContext context, CustomTokenService tokenService) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -221,7 +233,8 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
               tokenService.resetPredefinedTokens();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Predefined tokens have been reset')),
+                const SnackBar(
+                    content: Text('Predefined tokens have been reset')),
               );
             },
             style: TextButton.styleFrom(foregroundColor: Colors.orange),
@@ -232,7 +245,8 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
     );
   }
 
-  void _showAddTokenDialog(BuildContext context, CustomTokenService tokenService) {
+  void _showAddTokenDialog(
+      BuildContext context, CustomTokenService tokenService) {
     showDialog(
       context: context,
       builder: (context) => _TokenDialog(
@@ -250,7 +264,8 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
     );
   }
 
-  void _showEditTokenDialog(BuildContext context, CustomTokenService tokenService, CustomColorToken token) {
+  void _showEditTokenDialog(BuildContext context,
+      CustomTokenService tokenService, CustomColorToken token) {
     showDialog(
       context: context,
       builder: (context) => _TokenDialog(
@@ -264,12 +279,14 @@ class _CustomTokenEditorState extends State<CustomTokenEditor> {
             darkValue: darkColor,
           ));
         },
-        validateName: (name) => tokenService.getTokenValidationErrors(name, excludeId: token.id),
+        validateName: (name) =>
+            tokenService.getTokenValidationErrors(name, excludeId: token.id),
       ),
     );
   }
 
-  void _showDeleteDialog(BuildContext context, CustomTokenService tokenService, CustomColorToken token) {
+  void _showDeleteDialog(BuildContext context, CustomTokenService tokenService,
+      CustomColorToken token) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -315,15 +332,18 @@ class _CustomTokenTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
+                color: Theme.of(context)
+                    .colorScheme
+                    .secondary
+                    .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 'PREDEFINED',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ),
         ],
@@ -336,9 +356,9 @@ class _CustomTokenTile extends StatelessWidget {
           Text(
             'Variable: ${token.dartVariableName}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontFamily: 'monospace',
-              color: Colors.grey[600],
-            ),
+                  fontFamily: 'monospace',
+                  color: Colors.grey[600],
+                ),
           ),
         ],
       ),
@@ -351,7 +371,8 @@ class _CustomTokenTile extends StatelessWidget {
             decoration: BoxDecoration(
               color: token.lightValue,
               border: Border.all(color: Colors.grey[300]!),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(2)),
             ),
           ),
           Container(
@@ -360,7 +381,8 @@ class _CustomTokenTile extends StatelessWidget {
             decoration: BoxDecoration(
               color: token.darkValue,
               border: Border.all(color: Colors.grey[300]!),
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(2)),
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(2)),
             ),
           ),
         ],
@@ -388,7 +410,9 @@ class _CustomTokenTile extends StatelessWidget {
 class _TokenDialog extends StatefulWidget {
   final String title;
   final CustomColorToken? initialToken;
-  final Function(String name, String description, Color lightColor, Color darkColor) onSave;
+  final Function(
+          String name, String description, Color lightColor, Color darkColor)
+      onSave;
   final List<String> Function(String name) validateName;
 
   const _TokenDialog({
@@ -412,11 +436,13 @@ class _TokenDialogState extends State<_TokenDialog> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.initialToken?.name ?? '');
-    _descriptionController = TextEditingController(text: widget.initialToken?.description ?? '');
+    _nameController =
+        TextEditingController(text: widget.initialToken?.name ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.initialToken?.description ?? '');
     _lightColor = widget.initialToken?.lightValue ?? Colors.blue;
     _darkColor = widget.initialToken?.darkValue ?? Colors.blue[300]!;
-    
+
     _nameController.addListener(_validateName);
   }
 
@@ -433,7 +459,8 @@ class _TokenDialogState extends State<_TokenDialog> {
     });
   }
 
-  bool get _isValid => _nameErrors.isEmpty && _nameController.text.trim().isNotEmpty;
+  bool get _isValid =>
+      _nameErrors.isEmpty && _nameController.text.trim().isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -469,10 +496,12 @@ class _TokenDialogState extends State<_TokenDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Light Theme Color', style: TextStyle(fontWeight: FontWeight.w500)),
+                      const Text('Light Theme Color',
+                          style: TextStyle(fontWeight: FontWeight.w500)),
                       const SizedBox(height: 8),
                       InkWell(
-                        onTap: () => _pickColor(context, _lightColor, (color) => setState(() => _lightColor = color)),
+                        onTap: () => _pickColor(context, _lightColor,
+                            (color) => setState(() => _lightColor = color)),
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
@@ -493,10 +522,12 @@ class _TokenDialogState extends State<_TokenDialog> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Dark Theme Color', style: TextStyle(fontWeight: FontWeight.w500)),
+                      const Text('Dark Theme Color',
+                          style: TextStyle(fontWeight: FontWeight.w500)),
                       const SizedBox(height: 8),
                       InkWell(
-                        onTap: () => _pickColor(context, _darkColor, (color) => setState(() => _darkColor = color)),
+                        onTap: () => _pickColor(context, _darkColor,
+                            (color) => setState(() => _darkColor = color)),
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
@@ -523,22 +554,25 @@ class _TokenDialogState extends State<_TokenDialog> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _isValid ? () {
-            widget.onSave(
-              _nameController.text.trim(),
-              _descriptionController.text.trim(),
-              _lightColor,
-              _darkColor,
-            );
-            Navigator.pop(context);
-          } : null,
+          onPressed: _isValid
+              ? () {
+                  widget.onSave(
+                    _nameController.text.trim(),
+                    _descriptionController.text.trim(),
+                    _lightColor,
+                    _darkColor,
+                  );
+                  Navigator.pop(context);
+                }
+              : null,
           child: const Text('Save'),
         ),
       ],
     );
   }
 
-  void _pickColor(BuildContext context, Color currentColor, ValueChanged<Color> onColorChanged) {
+  void _pickColor(BuildContext context, Color currentColor,
+      ValueChanged<Color> onColorChanged) {
     showDialog(
       context: context,
       builder: (context) => ColorPickerWidget(

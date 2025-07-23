@@ -5,10 +5,10 @@ class ColorUtils {
   static double calculateContrast(Color color1, Color color2) {
     final luminance1 = color1.computeLuminance();
     final luminance2 = color2.computeLuminance();
-    
+
     final brightest = math.max(luminance1, luminance2);
     final darkest = math.min(luminance1, luminance2);
-    
+
     return (brightest + 0.05) / (darkest + 0.05);
   }
 
@@ -47,9 +47,9 @@ class ColorUtils {
 
   static int _colorToInt(Color color) {
     return (color.a * 255).round() << 24 |
-           (color.r * 255).round() << 16 |
-           (color.g * 255).round() << 8 |
-           (color.b * 255).round();
+        (color.r * 255).round() << 16 |
+        (color.g * 255).round() << 8 |
+        (color.b * 255).round();
   }
 
   static int colorToInt(Color color) {
@@ -80,7 +80,7 @@ class ColorUtils {
   static List<Color> generateHarmonicColors(Color baseColor, int count) {
     final hsl = HSLColor.fromColor(baseColor);
     final colors = <Color>[];
-    
+
     for (int i = 0; i < count; i++) {
       final hue = (hsl.hue + (360 / count * i)) % 360;
       final harmonicColor = HSLColor.fromAHSL(
@@ -91,16 +91,17 @@ class ColorUtils {
       ).toColor();
       colors.add(harmonicColor);
     }
-    
+
     return colors;
   }
 
   static List<Color> generateMonochromaticColors(Color baseColor, int count) {
     final hsl = HSLColor.fromColor(baseColor);
     final colors = <Color>[];
-    
+
     for (int i = 0; i < count; i++) {
-      final lightness = math.max(0.1, math.min(0.9, hsl.lightness + ((i - count / 2) * 0.15)));
+      final lightness = math.max(
+          0.1, math.min(0.9, hsl.lightness + ((i - count / 2) * 0.15)));
       final monochromaticColor = HSLColor.fromAHSL(
         1.0,
         hsl.hue,
@@ -109,7 +110,7 @@ class ColorUtils {
       ).toColor();
       colors.add(monochromaticColor);
     }
-    
+
     return colors;
   }
 }

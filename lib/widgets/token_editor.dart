@@ -224,7 +224,10 @@ class _TokenEditorState extends State<TokenEditor> {
             decoration: BoxDecoration(
               color: token.isCustomized
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                  : Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
           ),

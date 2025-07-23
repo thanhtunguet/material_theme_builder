@@ -18,7 +18,7 @@ class ThemeDataModel {
     this.description = '',
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : createdAt = createdAt ?? DateTime.now(),
+  })  : createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
   factory ThemeDataModel.fromJson(Map<String, dynamic> json) =>
@@ -57,10 +57,12 @@ class ThemeDataModel {
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderSide: BorderSide(color: colorSchemeModel.lightColorScheme.outline),
+          borderSide:
+              BorderSide(color: colorSchemeModel.lightColorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: colorSchemeModel.lightColorScheme.primary, width: 2),
+          borderSide: BorderSide(
+              color: colorSchemeModel.lightColorScheme.primary, width: 2),
         ),
       ),
     );
@@ -97,10 +99,12 @@ class ThemeDataModel {
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderSide: BorderSide(color: colorSchemeModel.darkColorScheme.outline),
+          borderSide:
+              BorderSide(color: colorSchemeModel.darkColorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: colorSchemeModel.darkColorScheme.primary, width: 2),
+          borderSide: BorderSide(
+              color: colorSchemeModel.darkColorScheme.primary, width: 2),
         ),
       ),
     );

@@ -21,9 +21,9 @@ class SeedColorInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
+      elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -40,7 +40,7 @@ class SeedColorInput extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         description,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -60,18 +60,18 @@ class SeedColorInput extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             GestureDetector(
               onTap: () => _showColorPicker(context),
               child: Container(
-                height: 80,
+                height: 60,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: value,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: Theme.of(context).colorScheme.outline,
-                    width: 2,
+                    width: 1,
                   ),
                 ),
                 child: Center(
@@ -80,7 +80,7 @@ class SeedColorInput extends StatelessWidget {
                     style: TextStyle(
                       color: _getContrastingColor(value),
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -215,14 +215,14 @@ class SeedColorsPanel extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: MediaQuery.of(context).size.width > 800 ? 2 : 1,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: MediaQuery.of(context).size.width > 800 ? 2.5 : 3,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: MediaQuery.of(context).size.width > 800 ? 3.2 : 3.8,
           children: [
             SeedColorInput(
               label: 'Primary',

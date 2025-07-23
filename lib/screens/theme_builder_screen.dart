@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../constants/material_tokens.dart';
 import '../models/color_token.dart';
 import '../models/theme_data_model.dart';
 import '../services/theme_generator_service.dart';
@@ -141,6 +142,36 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
           updatedAt: DateTime.now(),
         );
       }
+    });
+  }
+
+  void _resetCategoryTokens(String category, bool isDark) {
+    setState(() {
+      final tokens = isDark
+          ? Map<String, ColorToken>.from(
+              _themeModel.colorSchemeModel.darkTokens)
+          : Map<String, ColorToken>.from(
+              _themeModel.colorSchemeModel.lightTokens);
+
+      // Get the list of token names for this category
+      final categoryTokens = MaterialTokens.tokenCategories[category] ?? [];
+      
+      // Reset all tokens in the specified category
+      for (final tokenName in categoryTokens) {
+        if (tokens.containsKey(tokenName)) {
+          tokens[tokenName]?.resetToDefault();
+        }
+      }
+
+      final newColorSchemeModel = _themeModel.colorSchemeModel.copyWith(
+        lightTokens: isDark ? null : tokens,
+        darkTokens: isDark ? tokens : null,
+      );
+
+      _themeModel = _themeModel.copyWith(
+        colorSchemeModel: newColorSchemeModel,
+        updatedAt: DateTime.now(),
+      );
     });
   }
 
@@ -309,9 +340,9 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
         children: [
           // Seed Colors Section
           Card(
-            elevation: 2,
+            elevation: 1,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -332,14 +363,14 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
                     'Define the base colors that generate your Material 3 color scheme',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   SeedColorsPanel(
                     primarySeed: _themeModel.colorSchemeModel.primarySeed,
                     secondarySeed: _themeModel.colorSchemeModel.secondarySeed,
@@ -401,6 +432,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
                     isDarkMode: _isDarkMode,
                     onTokenChanged: _updateToken,
                     onTokenReset: _resetToken,
+                    onCategoryAutoCalculate: _resetCategoryTokens,
                   ),
                 ],
               ),

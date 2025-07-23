@@ -194,6 +194,8 @@ class _MobilePreviewState extends State<_MobilePreview> {
         const SizedBox(height: 16),
         _buildMaterialComponentsCard(),
         const SizedBox(height: 16),
+        _buildTokenPairsCard(),
+        const SizedBox(height: 16),
         _buildActionButtonsCard(),
       ],
     );
@@ -350,6 +352,27 @@ class _MobilePreviewState extends State<_MobilePreview> {
                   ),
             ),
             const SizedBox(height: 16),
+            // FilledButton variants
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {},
+                    child: const Text('Filled'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.star),
+                    label: const Text('Filled Icon'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // ElevatedButton variants
             Row(
               children: [
                 Expanded(
@@ -360,14 +383,16 @@ class _MobilePreviewState extends State<_MobilePreview> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: FilledButton(
+                  child: ElevatedButton.icon(
                     onPressed: () {},
-                    child: const Text('Filled'),
+                    icon: const Icon(Icons.upload),
+                    label: const Text('Elevated Icon'),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
+            // OutlinedButton variants
             Row(
               children: [
                 Expanded(
@@ -378,9 +403,30 @@ class _MobilePreviewState extends State<_MobilePreview> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.download),
+                    label: const Text('Outlined Icon'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // TextButton variants
+            Row(
+              children: [
+                Expanded(
                   child: TextButton(
                     onPressed: () {},
                     child: const Text('Text'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.info),
+                    label: const Text('Text Icon'),
                   ),
                 ),
               ],
@@ -506,6 +552,258 @@ class _MobilePreviewState extends State<_MobilePreview> {
           trailing: const Icon(Icons.arrow_forward_ios),
           onTap: () {},
         ),
+      ],
+    );
+  }
+
+  Widget _buildTokenPairsCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Material 3 Token Pairs',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Primary token pairs
+            _buildTokenPairSection('Primary Colors', [
+              _buildTokenPair('primary', 'onPrimary', 
+                Theme.of(context).colorScheme.primary, 
+                Theme.of(context).colorScheme.onPrimary),
+              _buildTokenPair('primaryContainer', 'onPrimaryContainer', 
+                Theme.of(context).colorScheme.primaryContainer, 
+                Theme.of(context).colorScheme.onPrimaryContainer),
+            ]),
+            
+            const SizedBox(height: 12),
+            
+            // Secondary token pairs
+            _buildTokenPairSection('Secondary Colors', [
+              _buildTokenPair('secondary', 'onSecondary', 
+                Theme.of(context).colorScheme.secondary, 
+                Theme.of(context).colorScheme.onSecondary),
+              _buildTokenPair('secondaryContainer', 'onSecondaryContainer', 
+                Theme.of(context).colorScheme.secondaryContainer, 
+                Theme.of(context).colorScheme.onSecondaryContainer),
+            ]),
+            
+            const SizedBox(height: 12),
+            
+            // Tertiary token pairs
+            _buildTokenPairSection('Tertiary Colors', [
+              _buildTokenPair('tertiary', 'onTertiary', 
+                Theme.of(context).colorScheme.tertiary, 
+                Theme.of(context).colorScheme.onTertiary),
+              _buildTokenPair('tertiaryContainer', 'onTertiaryContainer', 
+                Theme.of(context).colorScheme.tertiaryContainer, 
+                Theme.of(context).colorScheme.onTertiaryContainer),
+            ]),
+            
+            const SizedBox(height: 12),
+            
+            // Error token pairs
+            _buildTokenPairSection('Error Colors', [
+              _buildTokenPair('error', 'onError', 
+                Theme.of(context).colorScheme.error, 
+                Theme.of(context).colorScheme.onError),
+              _buildTokenPair('errorContainer', 'onErrorContainer', 
+                Theme.of(context).colorScheme.errorContainer, 
+                Theme.of(context).colorScheme.onErrorContainer),
+            ]),
+            
+            const SizedBox(height: 12),
+            
+            // Surface token pairs
+            _buildTokenPairSection('Surface Colors', [
+              _buildTokenPair('surface', 'onSurface', 
+                Theme.of(context).colorScheme.surface, 
+                Theme.of(context).colorScheme.onSurface),
+              _buildTokenPair('surfaceVariant', 'onSurfaceVariant', 
+                Theme.of(context).colorScheme.surfaceContainerHighest, 
+                Theme.of(context).colorScheme.onSurfaceVariant),
+              _buildTokenPair('inverseSurface', 'onInverseSurface', 
+                Theme.of(context).colorScheme.inverseSurface, 
+                Theme.of(context).colorScheme.onInverseSurface),
+            ]),
+            
+            const SizedBox(height: 12),
+            
+            // Custom token pairs
+            Consumer<CustomTokenService>(
+              builder: (context, customTokenService, child) {
+                final customPairs = _getCustomTokenPairs(customTokenService);
+                if (customPairs.isEmpty) return const SizedBox.shrink();
+                return _buildCustomTokenPairSection(customPairs);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTokenPairSection(String title, List<Widget> pairs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+        ),
+        const SizedBox(height: 8),
+        ...pairs,
+      ],
+    );
+  }
+
+  Widget _buildTokenPair(String backgroundToken, String foregroundToken, 
+      Color backgroundColor, Color foregroundColor) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  backgroundToken,
+                  style: TextStyle(
+                    color: foregroundColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Background token',
+                  style: TextStyle(
+                    color: foregroundColor.withValues(alpha: 0.7),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 2,
+            height: 32,
+            color: foregroundColor.withValues(alpha: 0.3),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  foregroundToken,
+                  style: TextStyle(
+                    color: foregroundColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Foreground token',
+                  style: TextStyle(
+                    color: foregroundColor.withValues(alpha: 0.7),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Map<String, dynamic>> _getCustomTokenPairs(CustomTokenService service) {
+    final tokens = service.customTokens;
+    final pairs = <Map<String, dynamic>>[];
+    
+    // Create a map for easy lookup
+    final tokenMap = <String, dynamic>{};
+    for (final token in tokens) {
+      tokenMap[token.name] = token;
+    }
+    
+    // Define known token pair patterns
+    final pairPatterns = [
+      {'base': 'critical', 'on': 'onCritical'},
+      {'base': 'warning', 'on': 'onWarning'},
+      {'base': 'success', 'on': 'onSuccess'},
+      {'base': 'information', 'on': 'onInformation'},
+      {'base': 'defaultColor', 'on': 'onDefault'},
+      {'base': 'warningContainer', 'on': 'onWarningContainer'},
+      {'base': 'successContainer', 'on': 'onSuccessContainer'},
+      {'base': 'informationContainer', 'on': 'onInformationContainer'},
+      {'base': 'defaultContainer', 'on': 'onDefaultContainer'},
+    ];
+    
+    // Find matching pairs
+    for (final pattern in pairPatterns) {
+      final baseToken = tokenMap[pattern['base']];
+      final onToken = tokenMap[pattern['on']];
+      
+      if (baseToken != null && onToken != null) {
+        pairs.add({
+          'baseToken': baseToken,
+          'onToken': onToken,
+          'baseName': pattern['base'],
+          'onName': pattern['on'],
+        });
+      }
+    }
+    
+    return pairs;
+  }
+
+  Widget _buildCustomTokenPairSection(List<Map<String, dynamic>> pairs) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Custom Token Pairs',
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+        ),
+        const SizedBox(height: 8),
+        ...pairs.map((pair) {
+          final baseToken = pair['baseToken'];
+          final onToken = pair['onToken'];
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final backgroundColor = isDark ? baseToken.darkValue : baseToken.lightValue;
+          final foregroundColor = isDark ? onToken.darkValue : onToken.lightValue;
+          
+          return _buildTokenPair(
+            pair['baseName'],
+            pair['onName'],
+            backgroundColor,
+            foregroundColor,
+          );
+        }),
       ],
     );
   }

@@ -154,21 +154,41 @@ class PreviewPanel extends StatelessWidget {
           spacing: 12,
           runSpacing: 12,
           children: [
+            FilledButton(
+              onPressed: () {},
+              child: const Text('Filled'),
+            ),
+            FilledButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.star),
+              label: const Text('Filled Icon'),
+            ),
             ElevatedButton(
               onPressed: () {},
               child: const Text('Elevated'),
             ),
-            FilledButton(
+            ElevatedButton.icon(
               onPressed: () {},
-              child: const Text('Filled'),
+              icon: const Icon(Icons.upload),
+              label: const Text('Elevated Icon'),
             ),
             OutlinedButton(
               onPressed: () {},
               child: const Text('Outlined'),
             ),
+            OutlinedButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.download),
+              label: const Text('Outlined Icon'),
+            ),
             TextButton(
               onPressed: () {},
               child: const Text('Text'),
+            ),
+            TextButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.info),
+              label: const Text('Text Icon'),
             ),
             FloatingActionButton.small(
               onPressed: () {},

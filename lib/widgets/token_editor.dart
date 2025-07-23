@@ -10,6 +10,7 @@ class TokenEditor extends StatefulWidget {
   final bool isDarkMode;
   final Function(String tokenName, Color color, bool isDark) onTokenChanged;
   final Function(String tokenName, bool isDark) onTokenReset;
+  final Function(String category, bool isDark)? onCategoryAutoCalculate;
 
   const TokenEditor({
     super.key,
@@ -18,6 +19,7 @@ class TokenEditor extends StatefulWidget {
     required this.isDarkMode,
     required this.onTokenChanged,
     required this.onTokenReset,
+    this.onCategoryAutoCalculate,
   });
 
   @override
@@ -28,6 +30,7 @@ class _TokenEditorState extends State<TokenEditor> {
   final Map<String, bool> _expandedCategories = {
     for (String category in MaterialTokens.tokenCategories.keys) category: false
   };
+  bool _showBothModes = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,19 +52,31 @@ class _TokenEditorState extends State<TokenEditor> {
                 ),
                 Row(
                   children: [
-                    Text(
-                      widget.isDarkMode ? 'Dark' : 'Light',
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: widget.isDarkMode
-                            ? Colors.grey[800]
-                            : Colors.grey[200],
-                        shape: BoxShape.circle,
+                    if (!_showBothModes) ...[
+                      Text(
+                        widget.isDarkMode ? 'Dark' : 'Light',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: widget.isDarkMode
+                              ? Colors.grey[800]
+                              : Colors.grey[200],
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                    ],
+                    FilterChip(
+                      label: Text(_showBothModes ? 'Light & Dark' : 'Single Mode'),
+                      selected: _showBothModes,
+                      onSelected: (value) => setState(() => _showBothModes = value),
+                      avatar: Icon(
+                        _showBothModes ? Icons.compare : Icons.brightness_4,
+                        size: 16,
                       ),
                     ),
                   ],
@@ -90,8 +105,6 @@ class _TokenEditorState extends State<TokenEditor> {
 
   Widget _buildCategorySection(String category, List<String> tokens) {
     final isExpanded = _expandedCategories[category] ?? false;
-    final currentTokens =
-        widget.isDarkMode ? widget.darkTokens : widget.lightTokens;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -119,6 +132,19 @@ class _TokenEditorState extends State<TokenEditor> {
                         ),
                   ),
                   const Spacer(),
+                  if (widget.onCategoryAutoCalculate != null) ...[
+                    TextButton.icon(
+                      onPressed: () => _showAutoCalculateDialog(category),
+                      icon: const Icon(Icons.auto_fix_high, size: 16),
+                      label: const Text('Auto'),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -143,12 +169,24 @@ class _TokenEditorState extends State<TokenEditor> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Column(
-                children: tokens.map((tokenName) {
-                  final token = currentTokens[tokenName];
-                  if (token == null) return const SizedBox.shrink();
-
-                  return _buildTokenRow(tokenName, token);
-                }).toList(),
+                children: [
+                  if (_showBothModes) ...[
+                    // Show both light and dark pickers in each row
+                    ...tokens.map((tokenName) {
+                      final lightToken = widget.lightTokens[tokenName];
+                      final darkToken = widget.darkTokens[tokenName];
+                      if (lightToken == null || darkToken == null) return const SizedBox.shrink();
+                      return _buildDualTokenRow(tokenName, lightToken, darkToken);
+                    }),
+                  ] else ...[
+                    ...tokens.map((tokenName) {
+                      final currentTokens = widget.isDarkMode ? widget.darkTokens : widget.lightTokens;
+                      final token = currentTokens[tokenName];
+                      if (token == null) return const SizedBox.shrink();
+                      return _buildTokenRow(tokenName, token, widget.isDarkMode);
+                    }),
+                  ],
+                ],
               ),
             ),
         ],
@@ -156,7 +194,7 @@ class _TokenEditorState extends State<TokenEditor> {
     );
   }
 
-  Widget _buildTokenRow(String tokenName, ColorToken token) {
+  Widget _buildTokenRow(String tokenName, ColorToken token, bool isDark) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -192,8 +230,7 @@ class _TokenEditorState extends State<TokenEditor> {
                   child: CompactColorPicker(
                     color: token.effectiveValue,
                     onColorChanged: (color) {
-                      widget.onTokenChanged(
-                          tokenName, color, widget.isDarkMode);
+                      widget.onTokenChanged(tokenName, color, isDark);
                     },
                     showLabel: false,
                   ),
@@ -202,7 +239,7 @@ class _TokenEditorState extends State<TokenEditor> {
                 if (token.isCustomized)
                   IconButton(
                     onPressed: () {
-                      widget.onTokenReset(tokenName, widget.isDarkMode);
+                      widget.onTokenReset(tokenName, isDark);
                     },
                     icon: Icon(
                       Icons.refresh,
@@ -230,6 +267,242 @@ class _TokenEditorState extends State<TokenEditor> {
                       .withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDualTokenRow(String tokenName, ColorToken lightToken, ColorToken darkToken) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  tokenName,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  lightToken.description,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Light mode color picker
+          Expanded(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Light',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CompactColorPicker(
+                        color: lightToken.effectiveValue,
+                        onColorChanged: (color) {
+                          widget.onTokenChanged(tokenName, color, false);
+                        },
+                        showLabel: false,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    if (lightToken.isCustomized)
+                      IconButton(
+                        onPressed: () {
+                          widget.onTokenReset(tokenName, false);
+                        },
+                        icon: Icon(
+                          Icons.refresh,
+                          size: 14,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        tooltip: 'Reset light to generated',
+                        visualDensity: VisualDensity.compact,
+                      )
+                    else
+                      const SizedBox(width: 32),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: lightToken.isCustomized
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withValues(alpha: 0.5),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          // Dark mode color picker
+          Expanded(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[800],
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Dark',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CompactColorPicker(
+                        color: darkToken.effectiveValue,
+                        onColorChanged: (color) {
+                          widget.onTokenChanged(tokenName, color, true);
+                        },
+                        showLabel: false,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    if (darkToken.isCustomized)
+                      IconButton(
+                        onPressed: () {
+                          widget.onTokenReset(tokenName, true);
+                        },
+                        icon: Icon(
+                          Icons.refresh,
+                          size: 14,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        tooltip: 'Reset dark to generated',
+                        visualDensity: VisualDensity.compact,
+                      )
+                    else
+                      const SizedBox(width: 32),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: darkToken.isCustomized
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withValues(alpha: 0.5),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  void _showAutoCalculateDialog(String category) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Auto-Calculate $category'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Choose which theme mode to auto-calculate:'),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  shape: BoxShape.circle,
+                ),
+              ),
+              title: const Text('Light Mode Only'),
+              subtitle: const Text('Reset light theme tokens to generated values'),
+              onTap: () {
+                Navigator.of(context).pop();
+                widget.onCategoryAutoCalculate?.call(category, false);
+              },
+            ),
+            ListTile(
+              leading: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  shape: BoxShape.circle,
+                ),
+              ),
+              title: const Text('Dark Mode Only'),
+              subtitle: const Text('Reset dark theme tokens to generated values'),
+              onTap: () {
+                Navigator.of(context).pop();
+                widget.onCategoryAutoCalculate?.call(category, true);
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.compare),
+              title: const Text('Both Modes'),
+              subtitle: const Text('Reset both light and dark theme tokens'),
+              onTap: () {
+                Navigator.of(context).pop();
+                widget.onCategoryAutoCalculate?.call(category, false);
+                widget.onCategoryAutoCalculate?.call(category, true);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
           ),
         ],
       ),

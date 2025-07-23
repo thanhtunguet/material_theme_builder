@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,47 +17,47 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.27.4'
-        channel: 'stable'
-        cache: true
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.27.4"
+          channel: "stable"
+          cache: true
 
-    - name: Get dependencies
-      run: flutter pub get
+      - name: Get dependencies
+        run: flutter pub get
 
-    - name: Analyze code
-      run: flutter analyze
+      - name: Analyze code
+        run: flutter analyze
 
-    - name: Build for web
-      run: |
-        flutter build web --release \
-          --web-renderer canvaskit \
-          --base-href "/material_theme_builder/" \
-          --no-web-resources-cdn \
-          --dart-define=FLUTTER_WEB_USE_SKIA=true
+      - name: Build for web
+        run: |
+          flutter build web --release \
+            --web-renderer canvaskit \
+            --base-href "/" \
+            --no-web-resources-cdn \
+            --dart-define=FLUTTER_WEB_USE_SKIA=true
 
-    - name: Add build info
-      run: |
-        echo "Build completed at $(date)" > build/web/build-info.txt
-        echo "Commit: ${{ github.sha }}" >> build/web/build-info.txt
-        echo "Branch: ${{ github.ref_name }}" >> build/web/build-info.txt
-        du -sh build/web >> build/web/build-info.txt
+      - name: Add build info
+        run: |
+          echo "Build completed at $(date)" > build/web/build-info.txt
+          echo "Commit: ${{ github.sha }}" >> build/web/build-info.txt
+          echo "Branch: ${{ github.ref_name }}" >> build/web/build-info.txt
+          du -sh build/web >> build/web/build-info.txt
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
-    - name: Upload to GitHub Pages
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: ./build/web
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build/web
 
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

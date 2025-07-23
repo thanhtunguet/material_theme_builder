@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:html' as html; // ignore: avoid_web_libraries_in_flutter
+
 import 'package:flutter/material.dart';
+
+import '../constants/predefined_tokens.dart';
 import '../models/custom_color_token.dart';
 import '../models/custom_theme_extension.dart';
-import '../constants/predefined_tokens.dart';
 
 class CustomTokenService extends ChangeNotifier {
   final List<CustomColorToken> _customTokens = [];
@@ -213,8 +215,9 @@ class $className extends ThemeExtension<$className> {
   bool validateTokenName(String name, {String? excludeId}) {
     if (name.trim().isEmpty) return false;
     if (RegExp(r'^[0-9]').hasMatch(name.trim())) return false;
-    if (!RegExp(r'^[a-zA-Z][a-zA-Z0-9_\s]*$').hasMatch(name.trim()))
+    if (!RegExp(r'^[a-zA-Z][a-zA-Z0-9_\s]*$').hasMatch(name.trim())) {
       return false;
+    }
 
     final dartName = CustomColorToken(
       id: 'temp',

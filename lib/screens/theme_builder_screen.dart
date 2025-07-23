@@ -184,7 +184,7 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
     return Row(
       children: [
         Expanded(
-          flex: 3,
+          flex: 5,
           child: TabBarView(
             controller: _tabController,
             children: [
@@ -325,9 +325,10 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
                       const SizedBox(width: 12),
                       Text(
                         'Seed Colors',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                     ],
                   ),
@@ -335,8 +336,8 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
                   Text(
                     'Define the base colors that generate your Material 3 color scheme',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   SeedColorsPanel(
@@ -344,19 +345,23 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
                     secondarySeed: _themeModel.colorSchemeModel.secondarySeed,
                     tertiarySeed: _themeModel.colorSchemeModel.tertiarySeed,
                     neutralSeed: _themeModel.colorSchemeModel.neutralSeed,
-                    onPrimaryChanged: (color) => _updateSeedColor('primary', color),
-                    onSecondaryChanged: (color) => _updateSeedColor('secondary', color),
-                    onTertiaryChanged: (color) => _updateSeedColor('tertiary', color),
-                    onNeutralChanged: (color) => _updateSeedColor('neutral', color),
+                    onPrimaryChanged: (color) =>
+                        _updateSeedColor('primary', color),
+                    onSecondaryChanged: (color) =>
+                        _updateSeedColor('secondary', color),
+                    onTertiaryChanged: (color) =>
+                        _updateSeedColor('tertiary', color),
+                    onNeutralChanged: (color) =>
+                        _updateSeedColor('neutral', color),
                     onResetAll: _resetAllSeeds,
                   ),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Token Editor Section
           Card(
             elevation: 2,
@@ -375,9 +380,10 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
                       const SizedBox(width: 12),
                       Text(
                         'Material Color Tokens',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                     ],
                   ),
@@ -385,8 +391,8 @@ class _ThemeBuilderScreenState extends State<ThemeBuilderScreen>
                   Text(
                     'Fine-tune individual color tokens or use the auto-generated values',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   TokenEditor(

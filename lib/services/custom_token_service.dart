@@ -147,9 +147,14 @@ class $className extends ThemeExtension<$className> {
         _predefinedTokensInitialized = data['predefinedTokensInitialized'] ?? false;
         
         _customTokens.clear();
-        _customTokens.addAll(
-          tokensData.map((tokenData) => CustomColorToken.fromJson(tokenData))
-        );
+        for (final tokenData in tokensData) {
+          try {
+            final token = CustomColorToken.fromJson(tokenData);
+            _customTokens.add(token);
+          } catch (e) {
+            debugPrint('Error parsing individual token: $e');
+          }
+        }
       }
       
       if (!_predefinedTokensInitialized) {

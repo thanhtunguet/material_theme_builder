@@ -41,7 +41,9 @@ class MobilePreviewPanel extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: Theme(
                         data: themeData,
-                        child: const _MobilePreview(),
+                        child: _MobilePreview(
+                          key: ValueKey('mobile_preview_${isDarkMode ? 'dark' : 'light'}'),
+                        ),
                       ),
                     ),
                   ),
@@ -97,20 +99,25 @@ class MobilePreviewPanel extends StatelessWidget {
       return baseTheme;
     }
 
-    final customExtension = isDarkMode
-        ? customTokenService.buildDarkExtension()
-        : customTokenService.buildLightExtension();
+    try {
+      final customExtension = isDarkMode
+          ? customTokenService.buildDarkExtension()
+          : customTokenService.buildLightExtension();
 
-    return baseTheme.copyWith(
-      extensions: <ThemeExtension<dynamic>>[
-        customExtension,
-      ],
-    );
+      return baseTheme.copyWith(
+        extensions: <ThemeExtension<dynamic>>[
+          customExtension,
+        ],
+      );
+    } catch (e) {
+      debugPrint('Error building custom theme extension: $e');
+      return baseTheme;
+    }
   }
 }
 
 class _MobilePreview extends StatefulWidget {
-  const _MobilePreview();
+  const _MobilePreview({super.key});
 
   @override
   State<_MobilePreview> createState() => _MobilePreviewState();

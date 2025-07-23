@@ -10,7 +10,10 @@
       "Bash(flutter analyze:*)",
       "mcp__ide__getDiagnostics",
       "WebFetch(domain:github.com)",
-      "Bash(flutter test:*)"
+      "Bash(flutter test:*)",
+      "Bash(flutter logs:*)",
+      "Bash(flutter:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }
